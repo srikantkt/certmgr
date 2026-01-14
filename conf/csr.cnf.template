@@ -1,0 +1,30 @@
+# conf/csr.cnf.template - Certificate Signing Request Template
+# Variables: {{CERT_CN}}, {{COUNTRY}}, {{STATE}}, {{ORG}}, {{SAN_DNS}}, {{SAN_IP}}
+
+[ req ]
+default_bits        = 2048
+distinguished_name  = req_distinguished_name
+req_extensions      = req_ext
+string_mask         = utf8only
+default_md          = sha256
+
+[ req_distinguished_name ]
+countryName                     = Country Name (2 letter code)
+stateOrProvinceName             = State or Province Name
+localityName                    = Locality Name
+0.organizationName              = Organization Name
+organizationalUnitName          = Organizational Unit Name
+commonName                      = Common Name
+emailAddress                    = Email Address
+
+countryName_default             = {{COUNTRY}}
+stateOrProvinceName_default     = {{STATE}}
+0.organizationName_default      = {{ORG}}
+commonName_default              = {{CERT_CN}}
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = {{SAN_DNS}}
+IP.1 = {{SAN_IP}}
