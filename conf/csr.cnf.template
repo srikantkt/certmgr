@@ -1,10 +1,7 @@
-# conf/csr.cnf.template - Certificate Signing Request Template
-# Variables: {{CERT_CN}}, {{COUNTRY}}, {{STATE}}, {{ORG}}, {{SAN_DNS}}, {{SAN_IP}}
-
 [ req ]
 default_bits        = 2048
 distinguished_name  = req_distinguished_name
-req_extensions      = req_ext
+req_extensions      = v3_req
 string_mask         = utf8only
 default_md          = sha256
 
@@ -19,12 +16,20 @@ emailAddress                    = Email Address
 
 countryName_default             = {{COUNTRY}}
 stateOrProvinceName_default     = {{STATE}}
-0.organizationName_default      = {{ORG}}
-commonName_default              = {{CERT_CN}}
+localityName_default            = {{LOCALITY}}
+0.organizationName_default      = {{ORGANIZATION}}
+organizationalUnitName_default  = {{ORG_UNIT}}
+commonName_default              = {{COMMON_NAME}}
+emailAddress_default            = {{EMAIL}}
 
-[ req_ext ]
-subjectAltName = @alt_names
+[ v3_req ]
+basicConstraints    = critical, CA:FALSE
+keyUsage            = critical, digitalSignature, keyEncipherment
+extendedKeyUsage    = serverAuth
+default_days        = 365
+subjectAltName      = critical, @alt_names
 
 [ alt_names ]
-DNS.1 = {{SAN_DNS}}
-IP.1 = {{SAN_IP}}
+DNS.1 = {{SAN_DNS_1}}
+DNS.2 = {{SAN_DNS_2}}
+IP.1 = {{SAN_IP_1}}

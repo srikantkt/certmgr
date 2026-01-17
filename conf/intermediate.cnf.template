@@ -24,7 +24,7 @@ default_crl_days  = 30
 default_md        = sha256
 name_opt          = ca_default
 cert_opt          = ca_default
-default_days      = 375
+default_days      = 1825
 preserve          = no
 policy            = policy_loose
 
@@ -70,7 +70,7 @@ commonName_default              = {{INTER_CA_CN}}
 subjectKeyIdentifier = hash
 authorityKeyIdentifier = keyid:always,issuer
 basicConstraints = critical, CA:true, pathlen:0
-keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+keyUsage = critical, cRLSign, keyCertSign
 
 [ usr_cert ]
 basicConstraints = CA:FALSE
@@ -89,6 +89,7 @@ subjectKeyIdentifier = hash
 authorityKeyIdentifier = keyid,issuer:always
 keyUsage = critical, digitalSignature, keyEncipherment
 extendedKeyUsage = serverAuth
+subjectAltName = critical, @alt_names
 
 [ crl_ext ]
 authorityKeyIdentifier=keyid:always
@@ -99,3 +100,5 @@ subjectKeyIdentifier = hash
 authorityKeyIdentifier = keyid,issuer
 keyUsage = critical, digitalSignature
 extendedKeyUsage = critical, OCSPSigning
+
+

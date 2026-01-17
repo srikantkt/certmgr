@@ -13,23 +13,46 @@ import socket
 from pathlib import Path
 from typing import Dict, Optional
 from datetime import datetime
+import logging
 
 # Base paths
-BASE_DIR = Path(__file__).resolve().parent.parent
+## NOTE: Let's look for an environment variable 'CMS_BASE_DIR' and use that if it exists. Otherwise,
+## we use a special directory called 'cms_instance' which is the parent of the parent of the parent of the file.
+DEFAULT_BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = os.getenv("CMS_BASE_DIR", DEFAULT_BASE_DIR)
+if BASE_DIR == DEFAULT_BASE_DIR:
+    BASE_DIR = DEFAULT_BASE_DIR / "cms_instance"
+
+## NOTE: The certificate manager instance directories are relative to the BASE_DIR
+## The directories are:
+## - conf: Configuration files
+## - ca: Certificate Authority files
+## - csr: Certificate Signing Requests
+## - private_keys: Private keys
+## - issued_certificates: Issued certificates
+## - crl: Certificate Revocation Lists
 CONF_DIR = BASE_DIR / "conf"
 CA_DIR = BASE_DIR / "ca"
 CSR_DIR = BASE_DIR / "csr"
 PRIVATE_DIR = BASE_DIR / "private_keys"
 ISSUED_DIR = BASE_DIR / "issued_certificates"
 CRL_DIR = BASE_DIR / "crl"
-
+## Let's initialize logger to log message to 'logs' directory in the BASE_DIR with a 
+## unique name based on the base directory name and the current timestamp.
+## The logger will be initialized in the CertificateManager.init method.
+LOG_DIR = BASE_DIR / "logs"
+LOG_FILE = LOG_DIR / f"{BASE_DIR.name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 
 class CertificateManager:
     """Main certificate management class"""
     
     def __init__(self):
         self.config = self._load_config()
-        
+        ## let's move the logger initialization to the init method
+        self.logger = logging.getLogger(f"CertificateManager.{BASE_DIR.name}")
+        self.logger.setLevel(logging.INFO)
+        self.logger.addHandler(logging.FileHandler(LOG_FILE))
+
     def _load_config(self) -> Dict:
         """Load or create default configuration"""
         config_file = CONF_DIR / "certmgr_config.json"
@@ -79,8 +102,9 @@ class CertificateManager:
         print(f"→ Running: {' '.join(cmd)}")
         result = subprocess.run(cmd, capture_output=True, text=True, env=env or os.environ)
         if result.returncode != 0:
-            print(f"✗ Error: {result.stderr}", file=sys.stderr)
-            sys.exit(1)
+            # use logger to log the error
+            self.logger.error(f"Error: {result.stderr}")
+            raise Exception(f"Error: {result.stderr}")
         return result
     
     def init(self, interactive: bool = True):
@@ -88,7 +112,7 @@ class CertificateManager:
         print("🔧 Initializing Certificate Management System")
         
         # Create directories
-        for dir_path in [CONF_DIR, CA_DIR, CSR_DIR, PRIVATE_DIR, ISSUED_DIR, CRL_DIR]:
+        for dir_path in [CONF_DIR, CA_DIR, CSR_DIR, PRIVATE_DIR, ISSUED_DIR, CRL_DIR, LOG_DIR]:
             dir_path.mkdir(parents=True, exist_ok=True)
         
         (CA_DIR / "root").mkdir(exist_ok=True)
@@ -500,4 +524,5 @@ def main():
 
 
 if __name__ == "__main__":
+    print(f"[Certificate Manager] Working instance directory: {BASE_DIR}")
     main()

@@ -5,7 +5,7 @@ set -euo pipefail
 
 # Create directory structure
 mkdir -p conf ca/{root,intermediate} csr private_keys issued_certificates crl
-mkdir -p src/{python,scripts,tests,testconfig}
+#mkdir -p src/{python,scripts,tests,testconfig}
 
 # Set secure permissions
 chmod 700 private_keys
