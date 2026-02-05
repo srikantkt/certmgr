@@ -18,8 +18,11 @@ import logging
 # Base paths
 ## NOTE: Let's look for an environment variable 'CMS_BASE_DIR' and use that if it exists. Otherwise,
 ## we use a special directory called 'cms_instance' which is the parent of the parent of the parent of the file.
+## For ex., project_root/src/python/__file__ ==> project_root
 DEFAULT_BASE_DIR = Path(__file__).resolve().parent.parent.parent
-BASE_DIR = os.getenv("CMS_BASE_DIR", DEFAULT_BASE_DIR)
+base_dir_name = os.getenv("CMS_BASE_DIR")
+if base_dir_name != None:
+    BASE_DIR = Path(base_dir_name).resolve()
 if BASE_DIR == DEFAULT_BASE_DIR:
     BASE_DIR = DEFAULT_BASE_DIR / "cms_instance"
 
@@ -526,3 +529,4 @@ def main():
 if __name__ == "__main__":
     print(f"[Certificate Manager] Working instance directory: {BASE_DIR}")
     main()
+    # cleanup and exit
