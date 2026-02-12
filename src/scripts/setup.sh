@@ -57,10 +57,10 @@ setup() {
         mkdir -p $INSTALL_DIR/conf
     fi
     # now copy scripts to $INSTALL_DIR/bin
-    log_info "Copying scripts and default config to working directory"
+    log_debug "Copying scripts and default config from $(get_directory) to working directory ($INSTALL_DIR)"
     cp $(get_directory)/utilities.sh $INSTALL_DIR/bin
     cp $(get_directory)/setup.sh $INSTALL_DIR/bin
-    cp $(get_directory)
+    cp -r $(get_directory)/../../conf $INSTALL_DIR/conf
 }
 
 parse_args() {
@@ -75,6 +75,9 @@ parse_args() {
                 log_debug "option -i: INSTALL_DIR=$INSTALL_DIR"
                 ;;
             x)
+                ## dry run
+                DRY_RUN=1
+                log_debug "option -x: dry run"
                 ;;
             h)
                 log_debug "option -h: Printing help message"

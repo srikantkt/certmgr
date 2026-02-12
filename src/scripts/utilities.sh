@@ -4,7 +4,7 @@
 # VERBOSE: value set in environment will be used; if not set defaults to '0'
 DRY_RUN=0
 
-# trace level setting: error|warning|info|debug
+# bit flags for trace level setting: error|warning|info|debug
 TRACE_LEVEL_DEBUG=1
 TRACE_LEVEL_INFO=2
 TRACE_LEVEL_WARNING=4
@@ -27,7 +27,7 @@ fi
 # For example, if current log level is 'TRACE_LEVEL_INFO' (2), then 
 # messages at TRACE_LEVEL_DEBUG will not log, all others (_INFO|_WARNING|_ERROR) will log
 # If VERBOSE variable is set and >0, then a call stack frame is generated 
-# args: 
+# method args: 
 #   [1] <integer:level> - level (1|2|4\8) at which the message will be logged; use constants defined above
 #   [2] <string:messae> - the string content to log along with the level indicator
 log_message() {
@@ -52,30 +52,30 @@ log_message() {
 }
 
 # log message at the 'debug' level (current log level >= TRACE_LEVEL_DEBUG)
-# args: 
-#   [2] <string:messae> - the string content to log along with the level indicator
+# method args: 
+#   [1] <string:messae> - the string content to log along with the level indicator
 log_debug() {
     message="$@"
     log_message $TRACE_LEVEL_DEBUG "$message"
 }
 
 # log message at the 'info' level (current log level >= TRACE_LEVEL_INFO)
-# args: 
-#   [2] <string:messae> - the string content to log along with the level indicator
+# method args: 
+#   [1] <string:messae> - the string content to log along with the level indicator
 log_info() {
     log_message $TRACE_LEVEL_INFO "$@"
 }
 
 # log message at the 'warning' level (current log level >= TRACE_LEVEL_WARNING)
-# args: 
-#   [2] <string:messae> - the string content to log along with the level indicator
+# method args: 
+#   [1] <string:messae> - the string content to log along with the level indicator
 log_warning() {
     log_message $TRACE_LEVEL_WARNING "$@"
 }
 
 # log message at the 'error' level (current log level >= TRACE_LEVEL_ERROR)
-# args: 
-#   [2] <string:messae> - the string content to log along with the level indicator
+# method args: 
+#   [1] <string:messae> - the string content to log along with the level indicator
 log_error() {
     log_message $TRACE_LEVEL_ERROR "$@"
 }
@@ -83,7 +83,8 @@ log_error() {
 # Get the fully qualified pathname for specified file or directory. This resolves relative paths.
 #   - If argument is a regular file, then the parent directory is returned
 #   - If no argument is provided, then parent directory of current script is returned
-# args: [1] <string:filename> - the file or directory name 
+# method args: 
+#   [1] <string:filename> - the file or directory name 
 get_directory() {
     #cannot perform any logging in this function since output 
     #is echo'd directly and used in the calling function
@@ -106,8 +107,9 @@ get_directory() {
 }
 
 # Check if specified process id specified in the file is currently running and recognized by the OS
-# args: [1] <string:filename> - pathname of file which contains the process id. The file 
-#                               should have a single line entry with a numeric process identifier
+# method args: 
+#   [1] <string:filename> - pathname of file which contains the process id. The file 
+#                           should have a single line entry with a numeric process identifier
 is_processfile_active() {
     local pidfile=$1
     if [[ -s $pidfile ]]; then
@@ -119,7 +121,8 @@ is_processfile_active() {
 }
 
 # Check if specified process id is currently running and recognized by the OS
-# args: [1] <integer:pid> - process id to check
+# method args: 
+#   [1] <integer:pid> - process id to check
 is_process_active() {
     proc=$1
     procstatus=$(pgrep -l -f $proc)
@@ -136,6 +139,7 @@ is_process_active() {
     esac
 }
 
+# default values for script name and command
 SCRIPT_NAME=$(get_directory)/$(basename $0)
 SCRIPT_COMMAND=$*
 log_debug "SCRIPT_NAME=${SCRIPT_NAME}"
